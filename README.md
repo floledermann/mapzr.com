@@ -1,6 +1,6 @@
 # mapzr.com
 
-[mapzr.com](http://mapzr.com/) is an online "swiss army knife" for working with maps and geographic information.
+[mapzr.com](http://mapzr.com/) - a "swiss army knife" for working with web maps.
 
 Pull requests welcome!
 
