@@ -1,0 +1,255 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mapzr.com - Tools for maps</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+header {
+    position: relative;
+    height: 41px;
+    z-index: 2;
+}
+
+header form {
+    display: inline;
+}
+
+#mainmap {
+    width: 100%;
+    height: calc(100% - 41px - 20px);
+    z-index: 1;
+}
+
+header h1 {
+    display: inline-block;
+    margin: 10px 0 0 13px;
+    vertical-align: -1px;
+    font-size: 18px;
+}
+
+header #searchinput {
+    font-size: 18px;
+    margin: 6px 11px;
+    padding: 2px 6px;
+}
+
+#githublink {
+    float: right;
+    margin: 15px 10px 0;
+    text-decoration: none;
+}
+
+footer {
+    height: 16px;
+    padding: 2px 5px 2px;
+}
+
+footer div {
+    float: left;
+    margin: 2px 0;
+}
+
+footer #attribution {
+    float: right;
+}
+
+small {
+    font-size: 10px;
+}
+
+#mainmap {
+    cursor: crosshair;
+}
+
+#searchform {
+    position: relative;
+}
+
+#searchresults {
+    position: absolute;
+    z-index: 1;
+    top: 30px;
+    left: 0px;
+    list-style: none;
+    background-color: rgba(255,255,255,0.95);
+    padding: 10px;
+}
+
+@media (max-width: 620px) {
+    #mainmap {
+        height: calc(100% - 41px - 40px);
+    }
+    footer {
+        height: 36px;
+    }
+    footer div,
+    footer #attribution {
+        float: none;
+    }
+}
+
+@media (max-width: 440px) {
+    #search {
+        display: none;
+    }
+}
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+   integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+   crossorigin=""/>
+   
+</head>
+<body>
+
+<header>
+<h1>mapzr.com</h1>
+<form id="searchform">
+<input type="text" id="searchinput" placeholder="search"></input>
+<ul id="searchresults">
+</ul>
+</form>
+<a id="githublink" href="#">GitHub</a>
+</header>
+
+<div id="mainmap">
+</div>
+
+
+<footer>
+<div id="mousecoords">Mouse Lat/Lon: <span id="coords"></span> <small>(click to copy)</small></div>
+<div id="attribution">mapzr.com by <a href="https://twitter.com/floledermann">@floledermann</a>, Map data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors</div>
+<input id="copytextinput" style="display: none;"></input>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+   integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+   crossorigin="">
+</script>
+
+<script>
+var map = L.map('mainmap', {
+    attributionControl: false
+})
+.setView([28, -16], 3);
+
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    //attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+function getSignificantCoordinates(xy, latlng, inverseProjection) {
+
+    lat = latlng.lat;
+    lng = latlng.lng;
+        
+    var neighbourPoint = inverseProjection([xy.x-1,xy.y-1]);
+    
+    var latResolution = Math.min(Math.abs(neighbourPoint.lat - lat), 1);
+    var lngResolution = Math.min(Math.abs(neighbourPoint.lng - lng), 1);
+    
+    // calculate significant number of decimals
+    var latSig = 1, lngSig = 1;       
+    while (1 / latSig > latResolution) latSig *= 10;
+    while (1 / lngSig > lngResolution) lngSig *= 10;
+        
+    // truncate
+    var latRounded = Math.round(lat * latSig) / latSig,
+        lngRounded = Math.round(lng * lngSig) / lngSig;
+        
+    return L.latLng(latRounded, lngRounded);
+}
+
+var boundInverse = map.containerPointToLatLng.bind(map);
+var lastCoords = null;
+
+map.addEventListener('mousemove', function(ev) {
+    lastCoords = getSignificantCoordinates(ev.containerPoint, ev.latlng, boundInverse);   
+    document.getElementById("coords").textContent = lastCoords.lat + ", " + lastCoords.lng;
+});
+
+map.addEventListener('click', function(ev) {
+    if (lastCoords) {
+        var text = lastCoords.lat + ", " + lastCoords.lng;
+        
+        var input = document.getElementById('copytextinput');
+        input.style.display = "inline";
+        input.value = text;
+        input.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            if (!successful) {
+                window.prompt("Coordinates:", text);
+            }
+        } catch (err) {
+            window.prompt("Coordinates:", text);
+        }        
+        input.style.display = "none";
+    }
+})
+
+document.getElementById("searchform").addEventListener("submit", function(ev) {
+    
+    ev.preventDefault();
+    
+    var query = document.getElementById("searchinput").value;
+
+    var url = 'http://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + query;
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+
+    xhr.onload = function () {
+    
+        var data = JSON.parse(xhr.responseText);
+        
+        var results = document.getElementById("searchresults");
+        results.innerHTML = "";
+        
+        data.forEach(function(item) {
+            var el = document.createElement("li");
+            el.textContent = item.display_name;
+            el.addEventListener("click", function() {
+                var bounds = L.latLngBounds(L.latLng(
+                    parseFloat(item.boundingbox[0]),
+                    parseFloat(item.boundingbox[2])
+                ),
+                L.latLng(
+                    parseFloat(item.boundingbox[1]),
+                    parseFloat(item.boundingbox[3])
+                ));
+                map.fitBounds(bounds);
+            /*
+                map.panTo([parseFloat(item.lat), parseFloat(item.lon)]);
+                if (item.type == 'city' || item.type == 'administrative') {
+                    map.setZoom(11);
+                } else {
+                    map.setZoom(13);
+                }
+                */
+            });
+            results.appendChild(el);
+        });
+     };
+
+    xhr.send(null);   
+});
+
+</script>
+
+</body>
+</html>
