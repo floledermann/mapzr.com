@@ -4,6 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>mapzr.com - Tools for maps</title>
 
+<link href="https://fonts.googleapis.com/css?family=Nova+Mono" rel="stylesheet">
+
 <style>
 * {
     margin: 0;
@@ -30,6 +32,7 @@ header {
     position: relative;
     min-height: 41px;
     z-index: 2;
+    border-bottom: 1px solid #bbb;
 }
 
 #mainmap {
@@ -43,6 +46,7 @@ header {
 footer {
     min-height: 16px;
     padding: 2px 5px 2px;
+    border-top: 1px solid #bbb;
 }
 
 /* Header */
@@ -52,10 +56,11 @@ header form {
 }
 
 header h1 {
+    font-family: 'Nova Mono', arial, sans-serif;
     display: inline-block;
-    margin: 10px 0 0 13px;
-    vertical-align: -1px;
-    font-size: 18px;
+    margin: 0px 0 0 13px;
+    vertical-align: -3px;
+    font-size: 26px;
 }
 
 #searchform {
@@ -118,8 +123,8 @@ small {
     }
 }
 
-@media (max-width: 440px) {
-    #search {
+@media (max-width: 320px) {
+    #searchform {
         display: none;
     }
 }
@@ -135,7 +140,7 @@ small {
 <header>
 <h1>mapzr.com</h1>
 <form id="searchform">
-<input type="text" id="searchinput" placeholder="jump to place" size="17"></input>
+<input type="text" id="searchinput" placeholder="jump to place" size="13"></input>
 <ul id="searchresults">
 </ul>
 </form>
