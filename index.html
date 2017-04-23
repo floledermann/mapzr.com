@@ -58,12 +58,11 @@ header {
     border-bottom: 1px solid #bbb;
 }
 
-#mainmap {
+#main {
+    position: relative;
     width: 100%;
-    xheight: calc(100% - 41px - 20px);
     flex: 1;
-    z-index: 1;
-    cursor: crosshair;
+    min-height: 0; /* http://stackoverflow.com/a/36247448/171579 */
 }
 
 footer {
@@ -124,22 +123,75 @@ small {
 
 /* Widgets */
 
-#searchresults {
-    position: absolute;
+#mainmap {
+    width: 100%;
+    height: 100%;
     z-index: 1;
-    top: 30px;
-    left: 0px;
-    list-style: none;
-    background-color: rgba(255,255,255,0.95);
-    padding: 10px;
+    cursor: crosshair;
 }
+
+#overlays {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding: 1.5em 0 0.5em;
+    max-width: calc(100% - 2em - 55px);
+    font-size: 14px;
+    background-color: rgba(255,255,255,0.95);
+}
+
+#overlays h3 {
+    padding: 1em;
+}
+
+#searchresults {
+}
+
+#searchresults-list {
+    list-style: none;
+}
+
+#searchresults-list li {
+    padding: 0.7em 1em;
+    cursor: pointer;
+}
+
+#searchresults-list li:hover {
+    background-color: #eef;
+}
+
+#search-term {
+    font-style: italic;
+}
+
+.closebutton {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 0.2em 0.4em;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.closebutton::before {
+    content: "×";
+}
+
+.closebutton:hover {
+    color: #555;
+}
+
+#jumpcurrentlocation {
+    display: none;
+    cursor: pointer;
+}
+
 
 /* Responsive */
 
 @media (max-width: 620px) {
-    #mainmap {
-        height: calc(100% - 41px - 40px);
-    }
     footer div,
     footer #attribution {
         float: none;
@@ -160,25 +212,48 @@ small {
 </head>
 <body>
 
+<!-- Header -->
+
 <header>
+
 <h1>mapzr</h1>
+
 <form id="searchform">
-<input type="text" id="searchinput" placeholder="jump to place" size="13"></input>
-<ul id="searchresults">
-</ul>
+<input type="text" id="searchinput" placeholder="" size="13" autocomplete="off"></input>
 </form>
+
+<div id="jumpcurrentlocation">[+]</div>
+
 </header>
+
+<!-- Main -->
+
+<div id="main">
 
 <div id="mainmap">
 </div>
 
+<div id="overlays" class="closeable">
+<div class="closebutton"></div>
+
+<section id="searchresults">
+<h3>Search results for <span id="search-term"></span>:</h3>
+<ul id="searchresults-list">
+</ul>
+</section>
+
+</div><!-- #overlays -->
+
+</div><!-- #main -->
+
+<!-- Footer -->
 
 <footer>
 <div id="mousecoords">Mouse Lat/Lon: <span id="coords"></span> <small>(click to copy)</small></div>
 <div id="attribution"><a href="https://twitter.com/floledermann"><svg id="i-twitter" viewBox="0 0 64 64" width="16" height="16" style="vertical-align: -3px">
     <path stroke-width="0" fill="#444" d="M60 16 L54 17 L58 12 L51 14 C42 4 28 15 32 24 C16 24 8 12 8 12 C8 12 2 21 12 28 L6 26 C6 32 10 36 17 38 L10 38 C14 46 21 46 21 46 C21 46 15 51 4 51 C37 67 57 37 54 21 Z" />
 </svg></a> 
-<a href="https://github.com/floledermann/mapzr.com"><svg id="i-github" viewBox="0 0 64 64" width="15" height="15" style="vertical-align: -2px">
+<a href="https://github.com/floledermann/mapzr.com"><svg id="i-github" viewBox="0 0 64 64" width="14" height="14" style="vertical-align: -2px">
     <path stroke-width="0" fill="#444" d="M32 0 C14 0 0 14 0 32 0 53 19 62 22 62 24 62 24 61 24 60 L24 55 C17 57 14 53 13 50 13 50 13 49 11 47 10 46 6 44 10 44 13 44 15 48 15 48 18 52 22 51 24 50 24 48 26 46 26 46 18 45 12 42 12 31 12 27 13 24 15 22 15 22 13 18 15 13 15 13 20 13 24 17 27 15 37 15 40 17 44 13 49 13 49 13 51 20 49 22 49 22 51 24 52 27 52 31 52 42 45 45 38 46 39 47 40 49 40 52 L40 60 C40 61 40 62 42 62 45 62 64 53 64 32 64 14 50 0 32 0 Z" />
 </svg></a> Map data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors</div>
 <input id="copytextinput" style="display: none;"></input>
@@ -213,6 +288,8 @@ function getSignificantCoordinates(xy, latlng, inverseProjection) {
     var latSig = 1, lngSig = 1;       
     while (1 / latSig > latResolution) latSig *= 10;
     while (1 / lngSig > lngResolution) lngSig *= 10;
+    //latSig = Math.max(latSig/10, 1);
+    //lngSig = Math.max(lngSig/10, 1);
         
     // truncate
     var latRounded = Math.round(lat * latSig) / latSig,
@@ -248,25 +325,53 @@ map.addEventListener('click', function(ev) {
         }        
         input.style.display = "none";
     }
-})
+});
+
+function loadNominatimJSON(queryString, numResults, callback) {
+
+    var url = 'http://nominatim.openstreetmap.org/search?format=json&limit=' + numResults + '&q=' + queryString;
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+
+    xhr.onload = function () {   
+        var data = JSON.parse(xhr.responseText);        
+        callback(data);
+    }
+
+    xhr.send(null);       
+}
+
+function showOverlay(id) {
+
+    var wrapper = document.getElementById("overlays");
+    var el = document.getElementById("searchresults");
+    
+    wrapper.style.display = "block";
+    el.style.display = "block";
+}
+
+function hideOverlays() {
+    var wrapper = document.getElementById("overlays");
+    wrapper.style.display = "none";
+}
+    
 
 document.getElementById("searchform").addEventListener("submit", function(ev) {
     
     ev.preventDefault();
     
-    var query = document.getElementById("searchinput").value;
-    var numResults = 8;
-
-    var url = 'http://nominatim.openstreetmap.org/search?format=json&limit=' + numResults + '&q=' + query;
+    var inputEl = document.getElementById("searchinput");    
+    var query = inputEl.value;
+    inputEl.blur();
     
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-
-    xhr.onload = function () {
+    document.getElementById("search-term").textContent = query;
     
-        var data = JSON.parse(xhr.responseText);
-        
-        var results = document.getElementById("searchresults");
+    loadNominatimJSON(query, 8, function (data) {
+    
+        inputEl.value = "";
+    
+        var results = document.getElementById("searchresults-list");
         results.innerHTML = "";
         
         data.forEach(function(item) {
@@ -282,21 +387,27 @@ document.getElementById("searchform").addEventListener("submit", function(ev) {
                     parseFloat(item.boundingbox[3])
                 ));
                 map.fitBounds(bounds);
-            /*
-                map.panTo([parseFloat(item.lat), parseFloat(item.lon)]);
-                if (item.type == 'city' || item.type == 'administrative') {
-                    map.setZoom(11);
-                } else {
-                    map.setZoom(13);
-                }
-                */
             });
             results.appendChild(el);
         });
-     };
+        
+        showOverlay("searchresults");
+     });
 
-    xhr.send(null);   
 });
+
+function makeClosebutton(el, closeableClass) {
+    closeableClass = closeableClass || "closeable";
+    el.addEventListener("click", function(ev) {
+        var el = this;
+        while (el && !el.classList.contains(closeableClass)) {
+            el = el.parentElement;
+        }
+        if (el) el.style.display = "none";
+    });
+}
+
+document.querySelectorAll(".closebutton").forEach(makeClosebutton);
 
 </script>
 
