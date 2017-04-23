@@ -184,8 +184,14 @@ small {
 }
 
 #jumpcurrentlocation {
-    display: none;
+    font-size: 13px;
+    vertical-align: 2px;
     cursor: pointer;
+}
+
+#jumpcurrentlocation.disabled {
+    opacity: 0.5;
+    cursor: default;
 }
 
 
@@ -222,7 +228,9 @@ small {
 <input type="text" id="searchinput" placeholder="" size="13" autocomplete="off"></input>
 </form>
 
-<div id="jumpcurrentlocation">[+]</div>
+<!--
+<span id="jumpcurrentlocation" title="jumpt to current location">[+]</span>
+-->
 
 </header>
 
@@ -255,7 +263,7 @@ small {
 </svg></a> 
 <a href="https://github.com/floledermann/mapzr.com"><svg id="i-github" viewBox="0 0 64 64" width="14" height="14" style="vertical-align: -2px">
     <path stroke-width="0" fill="#444" d="M32 0 C14 0 0 14 0 32 0 53 19 62 22 62 24 62 24 61 24 60 L24 55 C17 57 14 53 13 50 13 50 13 49 11 47 10 46 6 44 10 44 13 44 15 48 15 48 18 52 22 51 24 50 24 48 26 46 26 46 18 45 12 42 12 31 12 27 13 24 15 22 15 22 13 18 15 13 15 13 20 13 24 17 27 15 37 15 40 17 44 13 49 13 49 13 51 20 49 22 49 22 51 24 52 27 52 31 52 42 45 45 38 46 39 47 40 49 40 52 L40 60 C40 61 40 62 42 62 45 62 64 53 64 32 64 14 50 0 32 0 Z" />
-</svg></a> Map data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors</div>
+</svg></a> Map data &copy;&nbsp;<a href="http://osm.org/copyright">OpenStreetMap</a> contributors</div>
 <input id="copytextinput" style="display: none;"></input>
 </footer>
 
@@ -408,6 +416,27 @@ function makeClosebutton(el, closeableClass) {
 }
 
 document.querySelectorAll(".closebutton").forEach(makeClosebutton);
+
+var jumpEl = document.getElementById("jumpcurrentlocation");
+if (navigator.geolocation) {
+    jumpEl.addEventListener("click", function(ev){
+        navigator.geolocation.getCurrentPosition(function(position) {
+            map.setView([position.coords.latitude, position.coords.longitude], 13, {animate: true});
+        },
+        function(error){
+            document.getElementById("coords").textContent = "Error acquiring GPS position!";
+        },
+        {
+            enableHighAccuracy: true,
+            timeout : 5000,
+            maximumAge: 0
+        });
+    });
+} else {
+    jumpEl.classList.add("disabled");
+}
+    
+
 
 </script>
 
