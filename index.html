@@ -84,6 +84,16 @@ header h1 {
     vertical-align: -3px;
     font-size: 26px;
 }
+    
+header .slogan {
+    display: inline-block;
+    width: 3em;
+    vertical-align: -6px;
+    font-size: 7.5px;
+    text-transform: uppercase;
+    margin: 0 8px;
+    line-height: 8px;
+}
 
 #searchform {
     position: relative;
@@ -202,6 +212,9 @@ small {
     footer #attribution {
         float: none;
     }
+    header .slogan {
+        display: none;
+    }
 }
 
 @media (max-width: 289px) {
@@ -223,7 +236,8 @@ small {
 <header>
 
 <h1>mapzr</h1>
-
+<div class="slogan">Tools for maps</div>
+    
 <form id="searchform">
 <input type="text" id="searchinput" placeholder="" size="13" autocomplete="off"></input>
 </form>
