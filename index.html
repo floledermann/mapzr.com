@@ -82,7 +82,7 @@ header h1 {
     display: inline-block;
     margin: 0px 0 0 13px;
     vertical-align: -3px;
-    font-size: 26px;
+    font-size: 27px;
 }
     
 header .slogan {
@@ -91,7 +91,7 @@ header .slogan {
     vertical-align: -6px;
     font-size: 7.5px;
     text-transform: uppercase;
-    margin: 0 8px;
+    margin: 0 10px 0 5px;
     line-height: 8px;
 }
 
@@ -207,11 +207,7 @@ small {
 
 /* Responsive */
 
-@media (max-width: 620px) {
-    footer div,
-    footer #attribution {
-        float: none;
-    }
+@media (max-width: 400px) {
     header .slogan {
         display: none;
     }
@@ -220,6 +216,10 @@ small {
 @media (max-width: 289px) {
     #searchform {
         display: none;
+    }
+    footer div,
+    footer #attribution {
+        float: none;
     }
 }
 </style>
@@ -277,7 +277,8 @@ small {
 </svg></a> 
 <a href="https://github.com/floledermann/mapzr.com"><svg id="i-github" viewBox="0 0 64 64" width="14" height="14" style="vertical-align: -2px">
     <path stroke-width="0" fill="#444" d="M32 0 C14 0 0 14 0 32 0 53 19 62 22 62 24 62 24 61 24 60 L24 55 C17 57 14 53 13 50 13 50 13 49 11 47 10 46 6 44 10 44 13 44 15 48 15 48 18 52 22 51 24 50 24 48 26 46 26 46 18 45 12 42 12 31 12 27 13 24 15 22 15 22 13 18 15 13 15 13 20 13 24 17 27 15 37 15 40 17 44 13 49 13 49 13 51 20 49 22 49 22 51 24 52 27 52 31 52 42 45 45 38 46 39 47 40 49 40 52 L40 60 C40 61 40 62 42 62 45 62 64 53 64 32 64 14 50 0 32 0 Z" />
-</svg></a> Map data &copy;&nbsp;<a href="http://osm.org/copyright">OpenStreetMap</a> contributors</div>
+</svg></a>
+<!-- Map data &copy;&nbsp;<a href="http://osm.org/copyright">OpenStreetMap</a> contributors</div>-->
 <input id="copytextinput" style="display: none;"></input>
 </footer>
 
@@ -292,8 +293,14 @@ var map = L.map('mainmap', {
 })
 .setView([28, -16], 3);
 
+// we need to create attribution control manually to suppress the "Leaflet" link
+map.addControl(L.control.attribution({
+    position: 'bottomright',
+    prefix: ''
+}));
+      
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    //attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
 function getSignificantCoordinates(xy, latlng, inverseProjection) {
