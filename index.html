@@ -201,8 +201,8 @@ small {
 }
 
 #jumpcurrentlocation {
-    font-size: 13px;
-    vertical-align: 2px;
+    /* font-size: 13px; */
+    vertical-align: -6px;
     cursor: pointer;
 }
 
@@ -249,7 +249,15 @@ small {
 <input type="text" id="searchinput" placeholder="" size="13" autocomplete="off"></input>
 </form>
 
-<span id="jumpcurrentlocation" class="disabled" title="jumpt to current location">[+]</span>
+<span id="jumpcurrentlocation" class="disabled" title="jumpt to current location">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" style="width:25px; height: 25px;">
+	<path d="M48,35.1c-7.1,0-12.9,5.8-12.9,12.9c0,7.1,5.8,12.9,12.9,12.9c7.1,0,12.9-5.8,12.9-12.9
+		C60.9,40.9,55.1,35.1,48,35.1z"/>
+	<path d="M80.5,46.1l-7.7,0c-0.9-12.3-10.7-22-23-22.9l0-7.7l-3.7,0l0,7.7c-12.3,0.9-22,10.7-22.9,23
+		l-7.7,0l0,3.7l7.7,0c0.9,12.3,10.7,22,23,22.9l0,7.7l3.7,0l0-7.7c12.3-0.9,22-10.7,22.9-23l7.7,0L80.5,46.1z M48,69.2
+		c-11.7,0-21.2-9.5-21.2-21.2c0-11.7,9.5-21.2,21.2-21.3c11.7,0,21.2,9.5,21.3,21.2C69.2,59.7,59.7,69.2,48,69.2z"/>
+</svg>
+</span>
 
 </header>
 
