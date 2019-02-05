@@ -249,9 +249,7 @@ small {
 <input type="text" id="searchinput" placeholder="" size="13" autocomplete="off"></input>
 </form>
 
-<!--
-<span id="jumpcurrentlocation" title="jumpt to current location">[+]</span>
--->
+<span id="jumpcurrentlocation" class="disabled" title="jumpt to current location">[+]</span>
 
 </header>
 
@@ -365,7 +363,12 @@ map.addEventListener('click', function(ev) {
 
 function loadNominatimJSON(queryString, numResults, callback) {
 
-    var url = 'http://nominatim.openstreetmap.org/search?format=json&limit=' + numResults + '&q=' + queryString;
+    var protocol = window.location.protocol;
+    
+    // for file protocol
+    if (!protocol.startsWith("http")) protocol = "http:";
+
+    var url = protocol + '//nominatim.openstreetmap.org/search?format=json&limit=' + numResults + '&q=' + queryString;
     
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -446,7 +449,8 @@ function makeClosebutton(el, closeableClass) {
 document.querySelectorAll(".closebutton").forEach(makeClosebutton);
 
 var jumpEl = document.getElementById("jumpcurrentlocation");
-if (navigator.geolocation) {
+if (navigator.geolocation && (window.location.protocol == "https:" || window.location.protocol == "file:")) {
+    jumpEl.classList.remove("disabled");
     jumpEl.addEventListener("click", function(ev){
         navigator.geolocation.getCurrentPosition(function(position) {
             map.setView([position.coords.latitude, position.coords.longitude], 13, {animate: true});
