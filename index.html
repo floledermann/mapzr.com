@@ -259,6 +259,8 @@ small {
 </svg>
 </span>
 
+<span id="createURL">Link</span>
+
 </header>
 
 <!-- Main -->
@@ -299,6 +301,9 @@ small {
    integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
    crossorigin="">
 </script>
+
+<script src="js/lz-string.js"></script>
+
 
 <script>
 var map = L.map('mainmap', {
@@ -342,6 +347,10 @@ function getSignificantCoordinates(xy, latlng, inverseProjection) {
 
 var boundInverse = map.containerPointToLatLng.bind(map);
 var lastCoords = null;
+var geoJSON = {
+  type: "FeatureCollection",
+  features: []
+}
 
 map.addEventListener('mousemove', function(ev) {
     lastCoords = getSignificantCoordinates(ev.containerPoint, ev.latlng, boundInverse);   
@@ -356,6 +365,8 @@ map.addEventListener('click', function(ev) {
         input.style.display = "inline";
         input.value = text;
         input.select();
+        
+        createMarker(lastCoords);
 
         try {
             var successful = document.execCommand('copy');
@@ -368,6 +379,31 @@ map.addEventListener('click', function(ev) {
         input.style.display = "none";
     }
 });
+
+function createMarker(latlng, properties) {
+  marker = L.marker(latlng).addTo(map);
+  // marker converts various latlng formats internally, so reuse this
+  latlng = marker.getLatLng();
+  marker.addEventListener('click', function(ev) {
+    removeMarker(this);
+  });
+  marker.geoJSON = {
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: [latlng.lng, latlng.lat]
+    }
+  }
+  geoJSON.features.push(marker.geoJSON);
+}
+
+function removeMarker(marker) {
+  marker.remove();
+  let idx = geoJSON.features.indexOf(marker.geoJSON);
+  if (idx > -1) {
+    geoJSON.features.splice(idx, 1);
+  }
+}
 
 function loadNominatimJSON(queryString, numResults, callback) {
 
@@ -401,6 +437,61 @@ function showOverlay(id) {
 function hideOverlays() {
     var wrapper = document.getElementById("overlays");
     wrapper.style.display = "none";
+}
+
+document.getElementById("createURL").addEventListener("click", function(ev) {
+  jsonStr = JSON.stringify(geoJSON,null,0);
+  compressed = LZString.compressToEncodedURIComponent(jsonStr);
+  //encoded = btoa(jsonStr);
+  //alert(encoded.length + ":" + compressed.length + "\n\n" + compressed);
+  location.href = "#geo=" + compressed;
+});
+
+window.addEventListener('load', function() {
+  if (location.hash) {
+    
+    var params = {}
+    location.hash.substring(1).split("&").forEach(s => {
+      let def = s.split("=");
+      params[def[0]] = def[1];
+    });
+        
+    if (params.geo) {
+      let geoStr = LZString.decompressFromEncodedURIComponent(params.geo);
+      let geo = JSON.parse(geoStr);
+      
+      console.log(geo);
+      
+      showGeoJSON(geo);
+    }
+  }
+});
+
+function showGeoJSON(obj) {
+  if (obj.type) {
+    if (obj.type == "Feature") {
+      if (obj.geometry && obj.geometry.type) {
+        if (obj.geometry.type == "Point") {
+          let coords = obj.geometry.coordinates;
+          if (coords && coords.length) {
+            createMarker([coords[1], coords[0]], obj.properties);
+          }
+        }
+        else {
+          console.error("Unsupported geometry type: " + geometry.type);
+        }
+      }
+      else {
+        console.error("No geometry for feature");
+      }
+    }
+    else if (obj.type == "FeatureCollection" && obj.features && obj.features.length) {
+      obj.features.forEach(showGeoJSON);
+    }
+  }
+  else {
+    console.error("Invalid GeoJSON");
+  }
 }
     
 
