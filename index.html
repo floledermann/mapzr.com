@@ -221,8 +221,13 @@ small {
 
 #mainmap .leaflet-div-icon .btn-remove {
   position: absolute;
+  visibility: hidden;
   top: 0;
-  left: 100%;
+  left: calc(100% + 2px);
+}
+
+#mainmap .leaflet-div-icon:hover .btn-remove {
+  visibility: visible;
 }
 
 #mainmap .leaflet-div-icon .title {
