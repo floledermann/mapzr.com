@@ -1,0 +1,235 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    font-size-adjust: none;
+}
+
+/* Layout */
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+}
+
+header {
+    position: relative;
+    min-height: 41px;
+    z-index: 2;
+    border-bottom: 1px solid #bbb;
+}
+
+#main {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0; /* http://stackoverflow.com/a/36247448/171579 */
+}
+
+footer {
+    min-height: 16px;
+    padding: 2px 5px 2px;
+    border-top: 1px solid #bbb;
+}
+
+/* Header */
+
+header form {
+    display: inline;
+}
+
+header h1 {
+    font-family: 'Nova Mono', arial, sans-serif;
+    display: inline-block;
+    margin: 0px 0 0 13px;
+    vertical-align: -3px;
+    font-size: 27px;
+}
+
+header h1 .z {
+  margin-left: -2%;
+}
+header h1 .r {
+  margin-left: -1%;
+}
+    
+header .slogan {
+    display: inline-block;
+    width: 3em;
+    vertical-align: -6px;
+    font-size: 7.5px;
+    text-transform: uppercase;
+    margin: 0 10px 0 5px;
+    line-height: 8px;
+}
+
+#searchform {
+    position: relative;
+}
+
+header #searchinput {
+    font-size: 18px;
+    margin: 6px 11px;
+    padding: 2px 6px;
+}
+
+#githublink {
+    float: right;
+    margin: 15px 10px 0;
+    text-decoration: none;
+}
+
+/* Footer */
+
+footer div {
+    float: left;
+    margin: 2px 0;
+}
+
+footer a {
+    color: #555;
+    text-decoration: none;
+}
+
+footer #attribution {
+    float: right;
+}
+
+small {
+    font-size: 10px;
+}
+
+/* Widgets */
+
+#mainmap {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    cursor: crosshair;
+}
+
+#overlays {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding: 1.5em 0 0.5em;
+    max-width: calc(100% - 2em - 55px);
+    font-size: 14px;
+    background-color: rgba(255,255,255,0.95);
+}
+
+#overlays h3 {
+    padding: 1em;
+}
+
+#searchresults {
+}
+
+#searchresults-list {
+    list-style: none;
+}
+
+#searchresults-list li {
+    padding: 0.7em 1em;
+    cursor: pointer;
+}
+
+#searchresults-list li:hover {
+    background-color: #eef;
+}
+
+#search-term {
+    font-style: italic;
+}
+
+.closebutton {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 0.2em 0.4em;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.closebutton::before {
+    content: "×";
+}
+
+.closebutton:hover {
+    color: #555;
+}
+
+#jumpcurrentlocation {
+    /* font-size: 13px; */
+    vertical-align: -6px;
+    cursor: pointer;
+}
+
+#jumpcurrentlocation.disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Map Content */
+
+#mainmap .leaflet-div-icon {
+  border: none;
+  background: transparent;
+  /*background: rgba(255,255,255,0.2);*/
+  /*padding: 3px;*/
+}
+
+#mainmap .leaflet-div-icon .btn-remove {
+  position: absolute;
+  visibility: hidden;
+  transition: visibility 0.8s;
+  top: 0;
+  left: calc(100% + 2px);
+}
+
+#mainmap .leaflet-div-icon:hover .btn-remove {
+  visibility: visible;
+}
+
+#mainmap .leaflet-div-icon .title {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 80px;
+  margin-left: -40px;
+  text-align: center;
+  text-shadow: 1px 1px 2px #ffffff;
+  font-weight: bold;
+}
+
+#mainmap .leaflet-div-icon .title span {
+  padding: 0 1px;
+  background-color: rgba(255,255,255,0.2);
+}
+
+/* Responsive */
+
+@media (max-width: 400px) {
+    header .slogan {
+        display: none;
+    }
+}
+
+@media (max-width: 289px) {
+    #searchform {
+        display: none;
+    }
+    footer div,
+    footer #attribution {
+        float: none;
+    }
+}
