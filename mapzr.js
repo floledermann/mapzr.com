@@ -53,40 +53,54 @@ function clearMap() {
 function showGeoJSON(geoJSON) {
   clearMap();
   L.geoJSON(geoJSON, {
-    pointToLayer: function (feature, latlng) {
-      let title = feature.properties && feature.properties.title || "";
-      let icon = new L.DivIcon({
-        iconSize: [25,30],
-        iconAnchor: [12,30],
-        html: '<svg width="25" height="30" viewBox="-1 -1 28 32"><path fill="#ffffff" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M4.5,0.5c0,0,14.1,0,17,0s4,1,4,4s0,13.9,0,17s-1,4-4,4s-3,0-5,0c-3,0-3.5,3-3.5,3l0,0c0,0-0.5-3-3.5-3s-2,0-5,0s-4-1-4-4s0-13.9,0-17S1.5,0.5,4.5,0.5z"/></svg>' +
-        '<div class="title"><span>' + title + '</span></div><div class="btn-remove">X</div>'
-      });
-      icon.createIcon = function(oldIcon) {
-        let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
-        let removeButton = div.getElementsByClassName('btn-remove')[0];
-        removeButton.addEventListener("click", function(ev) {
-          removeMarker(feature);
-          // prevent propagation of click event to map
-          ev.cancelBubble = true;
-        });
-        return div;
-      }
-      let marker = new L.marker(latlng, {
-        draggable: true,
-        icon: icon
-      });
-      marker.addEventListener('click', function(ev) {
-        // prevent propagation of click event to map
-        ev.cancelBubble = true;
-      });
-      marker.addEventListener('moveend', function(ev) {
-        let latlng =  this.getLatLng();
-        this.geoJSON.geometry.coordinates = [latlng.lng, latlng.lat];
-      });
-      marker.geoJSON = feature;
-      return marker;
-    }
+    pointToLayer: createMarker
   }).addTo(markerGroup);
+}
+
+let editPopup = L.popup({
+  maxWidth: 200,
+  maxHeight: 400
+}).setContent('<input type="text" size="20" placeholder="Title">' +
+              '<textarea autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
+              '<div><button>OK</button></div>');
+
+function createMarker(geoJSON, latlng) {
+  let title = geoJSON.properties && geoJSON.properties.title || "";
+  let icon = new L.DivIcon({
+    iconSize: [25,30],
+    iconAnchor: [12,30],
+    html: '<svg width="25" height="30" viewBox="-1 -1 28 32"><path fill="#ffffff" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M4.5,0.5c0,0,14.1,0,17,0s4,1,4,4s0,13.9,0,17s-1,4-4,4s-3,0-5,0c-3,0-3.5,3-3.5,3l0,0c0,0-0.5-3-3.5-3s-2,0-5,0s-4-1-4-4s0-13.9,0-17S1.5,0.5,4.5,0.5z"/></svg>' +
+    '<div class="title"><span>' + title + '</span></div><div class="btn-remove">X</div>'
+  });
+  icon.createIcon = function(oldIcon) {
+    let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
+    let removeButton = div.getElementsByClassName('btn-remove')[0];
+    removeButton.addEventListener("click", function(ev) {
+      removePoint(geoJSON);
+      // prevent propagation of click event to map
+      ev.cancelBubble = true;
+    });
+    return div;
+  }
+  let marker = new L.marker(latlng, {
+    draggable: true,
+    icon: icon
+  });
+  marker.addEventListener('click', function(ev) {
+    // prevent propagation of click event to map
+    this.toggleEditor();
+    ev.cancelBubble = true;
+  });
+  marker.addEventListener('moveend', function(ev) {
+    let latlng =  this.getLatLng();
+    this.geoJSON.geometry.coordinates = [latlng.lng, latlng.lat];
+  });
+  marker.toggleEditor = function() {
+    editPopup.setLatLng(this.getLatLng());
+    map.openPopup(editPopup);
+  }
+  marker.geoJSON = geoJSON;
+  return marker;
 }
 
 map.addEventListener('mousemove', function(ev) {
@@ -103,7 +117,7 @@ map.addEventListener('click', function(ev) {
         input.value = text;
         input.select();
         
-        createMarker(lastCoords);
+        createPoint(lastCoords);
 
         try {
             var successful = document.execCommand('copy');
@@ -117,7 +131,7 @@ map.addEventListener('click', function(ev) {
     }
 });
 
-function createMarker(latlng, properties) {
+function createPoint(latlng, properties) {
   // convert various latlng formats
   latlng = L.latLng(latlng);
   markerJSON = {
@@ -136,7 +150,7 @@ function createMarker(latlng, properties) {
   showGeoJSON(geoJSON);
 }
 
-function removeMarker(markerJSON) {
+function removePoint(markerJSON) {
   let idx = geoJSON.features.indexOf(markerJSON);
   if (idx > -1) {
     geoJSON.features.splice(idx, 1);
