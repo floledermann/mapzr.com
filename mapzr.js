@@ -50,25 +50,67 @@ function clearMap() {
   markerGroup.clearLayers();
 }
 
-function showGeoJSON(geoJSON) {
+function showGeoJSON(data) {
+  data = data || geoJSON;
   clearMap();
-  L.geoJSON(geoJSON, {
+  L.geoJSON(data, {
     pointToLayer: createMarker
   }).addTo(markerGroup);
 }
 
-let editPopup = L.popup({
-  maxWidth: 200,
-  maxHeight: 400
-}).setContent('<input type="text" size="20" placeholder="Title">' +
-              '<textarea autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
-              '<div><button>OK</button></div>');
+function createPopup() {
+  let editForm = document.createElement("DIV");
+  editForm.innerHTML = '<input type="text" class="field-title" size="20" placeholder="Title">' +
+                '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
+                '<div><button class="button-ok">OK</button></div>';
+    
+  let editPopup = L.popup({
+    maxWidth: 200,
+    maxHeight: 400,
+    closeButton: false
+  }).setContent(editForm);
+  
+  let titleEl = editForm.getElementsByClassName("field-title")[0];
+  let descriptionEl = editForm.getElementsByClassName("field-description")[0];
+  let buttonOkEl = editForm.getElementsByClassName("button-ok")[0];
+  
+  titleEl.addEventListener("click", function() {
+    this.setSelectionRange(0, this.value.length);
+  })
+  titleEl.addEventListener("keyup", function (e) {
+    if (e.keyCode == 13) {
+        submit();
+    }
+  });
+  buttonOkEl.addEventListener('click', submit);
+  
+  function submit() {
+    if (editMarker) {
+      editMarker.properties.title = titleEl.value;
+      editMarker.properties.description = descriptionEl.value;
+      showGeoJSON(geoJSON);
+    }
+    map.closePopup(editPopup);
+  }
+  
+  editPopup.setMarker = function(markerJSON) {
+    editMarker = markerJSON;
+    titleEl.value = markerJSON.properties && markerJSON.properties.title || "";
+    titleEl.setSelectionRange(0, titleEl.value.length);
+    descriptionEl.value = markerJSON.properties && markerJSON.properties.description || "";
+  }
+
+  return editPopup;
+}
+
+let editMarker = null;
+let editPopup = createPopup();
 
 function createMarker(geoJSON, latlng) {
   let title = geoJSON.properties && geoJSON.properties.title || "";
   let icon = new L.DivIcon({
     iconSize: [25,30],
-    iconAnchor: [12,30],
+    iconAnchor: [13,29],
     html: '<svg width="25" height="30" viewBox="-1 -1 28 32"><path fill="#ffffff" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M4.5,0.5c0,0,14.1,0,17,0s4,1,4,4s0,13.9,0,17s-1,4-4,4s-3,0-5,0c-3,0-3.5,3-3.5,3l0,0c0,0-0.5-3-3.5-3s-2,0-5,0s-4-1-4-4s0-13.9,0-17S1.5,0.5,4.5,0.5z"/></svg>' +
     '<div class="title"><span>' + title + '</span></div><div class="btn-remove">X</div>'
   });
@@ -97,6 +139,7 @@ function createMarker(geoJSON, latlng) {
   });
   marker.toggleEditor = function() {
     editPopup.setLatLng(this.getLatLng());
+    editPopup.setMarker(geoJSON);
     map.openPopup(editPopup);
   }
   marker.geoJSON = geoJSON;
@@ -141,8 +184,8 @@ function createPoint(latlng, properties) {
       coordinates: [latlng.lng, latlng.lat]
     },
     properties: {
-      title: "Title Title",
-      description: "Description",
+      title: "",
+      description: "",
       icon: "icon"
     }
   }
@@ -218,35 +261,6 @@ window.addEventListener('load', function() {
     }
   }
 });
-
-/*
-function showGeoJSON(obj) {
-  if (obj.type) {
-    if (obj.type == "Feature") {
-      if (obj.geometry && obj.geometry.type) {
-        if (obj.geometry.type == "Point") {
-          let coords = obj.geometry.coordinates;
-          if (coords && coords.length) {
-            createMarker([coords[1], coords[0]], obj.properties);
-          }
-        }
-        else {
-          console.error("Unsupported geometry type: " + geometry.type);
-        }
-      }
-      else {
-        console.error("No geometry for feature");
-      }
-    }
-    else if (obj.type == "FeatureCollection" && obj.features && obj.features.length) {
-      obj.features.forEach(showGeoJSON);
-    }
-  }
-  else {
-    console.error("Invalid GeoJSON");
-  }
-}
-  */  
 
 document.getElementById("searchform").addEventListener("submit", function(ev) {
     
