@@ -74,8 +74,8 @@ function createPopup() {
   let descriptionEl = editForm.getElementsByClassName("field-description")[0];
   let buttonOkEl = editForm.getElementsByClassName("button-ok")[0];
   
-  titleEl.addEventListener("click", function() {
-    this.setSelectionRange(0, this.value.length);
+  titleEl.addEventListener("focus", function() {
+    window.setTimeout(function() { titleEl.select(); }, 30);
   })
   titleEl.addEventListener("keyup", function (e) {
     if (e.keyCode == 13) {
