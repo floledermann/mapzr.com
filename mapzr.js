@@ -62,42 +62,92 @@ function createPopup() {
   let editForm = document.createElement("DIV");
   editForm.innerHTML = '<input type="text" class="field-title" size="20" placeholder="Title">' +
                 '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
-                '<div><button class="button-ok">OK</button></div>';
+                '<div><button class="button-ok">OK</button><button class="button-cancel">Cancel</button></div>';
     
   let editPopup = L.popup({
-    maxWidth: 200,
+    maxWidth: 230,
     maxHeight: 400,
-    closeButton: false
+    closeButton: false,
+    keepInView: true
   }).setContent(editForm);
   
+  let draggable = null;
+
   let titleEl = editForm.getElementsByClassName("field-title")[0];
   let descriptionEl = editForm.getElementsByClassName("field-description")[0];
-  let buttonOkEl = editForm.getElementsByClassName("button-ok")[0];
+  let buttonOk = editForm.getElementsByClassName("button-ok")[0];
+  let buttonCancel = editForm.getElementsByClassName("button-cancel")[0];
   
+  function focusTitle() {
+    window.setTimeout(function() {
+      titleEl.select();
+    }, 30);
+    
+  }
   titleEl.addEventListener("focus", function() {
-    window.setTimeout(function() { titleEl.select(); }, 30);
+    focusTitle();
   })
   titleEl.addEventListener("keyup", function (e) {
-    if (e.keyCode == 13) {
+    if (e.keyCode == 13) { // ENTER
         submit();
     }
+    if (e.keyCode == 27) { // ESC
+        cancel();
+    }
   });
-  buttonOkEl.addEventListener('click', submit);
   
   function submit() {
+    let latlng = editPopup.getLatLng();
     if (editMarker) {
       editMarker.properties.title = titleEl.value;
       editMarker.properties.description = descriptionEl.value;
+      editMarker.geometry.coordinates = [latlng.lng, latlng.lat];
       showGeoJSON(geoJSON);
+    }
+    else {
+      createPoint(latlng, {
+        title: titleEl.value,
+        description: descriptionEl.value
+      });
     }
     map.closePopup(editPopup);
   }
+
+  function cancel() {
+    map.closePopup(editPopup);
+  }
+
+  buttonOk.addEventListener('click', submit);
+  buttonCancel.addEventListener('click', cancel);
   
   editPopup.setMarker = function(markerJSON) {
     editMarker = markerJSON;
-    titleEl.value = markerJSON.properties && markerJSON.properties.title || "";
-    titleEl.setSelectionRange(0, titleEl.value.length);
-    descriptionEl.value = markerJSON.properties && markerJSON.properties.description || "";
+    if (markerJSON) {
+      titleEl.value = markerJSON.properties && markerJSON.properties.title || "";
+      descriptionEl.value = markerJSON.properties && markerJSON.properties.description || "";
+    }
+    else {
+      titleEl.value = "";
+      descriptionEl.value = "";
+    }
+  }
+  
+  editPopup.show = function(latlng, markerJSON) {
+    editPopup.setLatLng(latlng);
+    editPopup.setMarker(markerJSON);
+    map.openPopup(this);
+    
+    if (!draggable) {
+      var draggable = new L.Draggable(editPopup._container, editPopup._wrapper);
+      draggable.enable();
+      
+      draggable.on('dragend', function() {
+        var pos = map.layerPointToLatLng(this._newPos);
+        editPopup.setLatLng(pos);
+      });
+
+    }
+    focusTitle();
   }
 
   return editPopup;
@@ -138,9 +188,7 @@ function createMarker(geoJSON, latlng) {
     this.geoJSON.geometry.coordinates = [latlng.lng, latlng.lat];
   });
   marker.toggleEditor = function() {
-    editPopup.setLatLng(this.getLatLng());
-    editPopup.setMarker(geoJSON);
-    map.openPopup(editPopup);
+    editPopup.show(this.getLatLng(), geoJSON);
   }
   marker.geoJSON = geoJSON;
   return marker;
@@ -155,12 +203,12 @@ map.addEventListener('click', function(ev) {
     if (lastCoords) {
         var text = lastCoords.lat + ", " + lastCoords.lng;
         
+        editPopup.show(lastCoords, null);
+        
         var input = document.getElementById('copytextinput');
         input.style.display = "inline";
         input.value = text;
         input.select();
-        
-        createPoint(lastCoords);
 
         try {
             var successful = document.execCommand('copy');
@@ -183,7 +231,7 @@ function createPoint(latlng, properties) {
       type: "Point",
       coordinates: [latlng.lng, latlng.lat]
     },
-    properties: {
+    properties: properties || {
       title: "",
       description: "",
       icon: "icon"
