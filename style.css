@@ -202,13 +202,14 @@ small {
 
 #mainmap .leaflet-div-icon .title {
   position: absolute;
-  bottom: 100%;
+  bottom: 108%;
   left: 50%;
   width: 80px;
   margin-left: -40px;
   text-align: center;
   text-shadow: 1px 1px 2px #ffffff;
   font-weight: bold;
+  line-height: 1;
 }
 
 #mainmap .leaflet-div-icon .title span {
