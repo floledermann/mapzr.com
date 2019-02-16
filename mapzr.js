@@ -62,7 +62,8 @@ function createPopup() {
   let editForm = document.createElement("DIV");
   editForm.innerHTML = '<input type="text" class="field-title" size="20" placeholder="Title">' +
                 '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
-                '<div><button class="button-ok">OK</button><button class="button-cancel">Cancel</button></div>';
+                '<small>Lat/Lon: 0, 0 (copy)</small>' +
+                '<div><button class="button-ok">OK</button> <button class="button-cancel">Cancel</button></div>';
     
   let editPopup = L.popup({
     maxWidth: 230,
@@ -125,10 +126,14 @@ function createPopup() {
     if (markerJSON) {
       titleEl.value = markerJSON.properties && markerJSON.properties.title || "";
       descriptionEl.value = markerJSON.properties && markerJSON.properties.description || "";
+      buttonOk.innerHTML = "Update Marker";
+      buttonCancel.innerHTML = "Cancel";
     }
     else {
       titleEl.value = "";
       descriptionEl.value = "";
+      buttonOk.innerHTML = "Create Marker";
+      buttonCancel.innerHTML = "Discard";
     }
   }
   
@@ -138,7 +143,11 @@ function createPopup() {
     map.openPopup(this);
     
     if (!draggable) {
-      var draggable = new L.Draggable(editPopup._container, editPopup._wrapper);
+      let grip = document.createElement("div");
+      grip.className = "grip";
+      editPopup._wrapper.appendChild(grip);
+      
+      var draggable = new L.Draggable(editPopup._container, grip);
       draggable.enable();
       
       draggable.on('dragend', function() {

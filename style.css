@@ -219,6 +219,21 @@ small {
 
 /* Popup */
 
+#mainmap .leaflet-popup-content-wrapper .grip {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  width: 23px;
+  height: auto;
+  background-color: #ddd;
+  background-image: url("img/grip.png");
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  cursor: move;
+}
+
+
 #mainmap .leaflet-popup-content {
   margin: 8px 8px;
   width: 230px;
