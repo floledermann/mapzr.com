@@ -1,7 +1,44 @@
+var options = {
+  zoom: 3,
+  center: [28, -16]
+};
+
+if (window.localStorage) {
+  let mapView = localStorage.getItem('mapView');
+  if (mapView) {
+    mapView = JSON.parse(mapView);
+    options.center = mapView.center;
+    options.zoom = mapView.zoom;
+  }
+}
+
+if (location.hash) {
+  let hashParams = {};
+  location.hash.substring(1).split("&").forEach(s => {
+    let def = s.split("=");
+    hashParams[def[0]] = def[1];
+  });
+  try {
+    options.geo = hashParams.geo;
+    if (hashParams.c) {
+      let center = hashParams.c.split(',').map(parseFloat);
+      if (center.length == 2) {
+        let zoom = parseInt(hashParams.z || options.zoom);
+        options.zoom = zoom;
+        options.center = center;
+      }
+    }
+  }
+  catch (e) {
+    // invalid hash params - do nothing
+  }
+}
+
 var map = L.map('mainmap', {
     attributionControl: false
-})
-.setView([28, -16], 3);
+});
+
+map.setView(options.center, options.zoom);
 
 var markerGroup = L.featureGroup().addTo(map);
 
@@ -231,6 +268,17 @@ map.addEventListener('click', function(ev) {
     }
 });
 
+map.addEventListener('zoomend', function(ev) {
+  if (window.localStorage) {
+    let mapView = {
+      center: map.getCenter(),
+      zoom: map.getZoom()
+    }
+    localStorage.setItem('mapView', JSON.stringify(mapView));
+    console.log(JSON.stringify(mapView));
+  }
+});
+
 function createPoint(latlng, properties) {
   // convert various latlng formats
   latlng = L.latLng(latlng);
@@ -297,25 +345,18 @@ document.getElementById("createURL").addEventListener("click", function(ev) {
   compressed = LZString.compressToEncodedURIComponent(jsonStr);
   //encoded = btoa(jsonStr);
   //alert(encoded.length + ":" + compressed.length + "\n\n" + compressed);
-  location.href = "#geo=" + compressed;
+  let zoom = map.getZoom();
+  let center = map.getCenter();
+  location.href = '#c=' + center.lat + ',' + center.lng + '&z=' + zoom + '&geo=' + compressed;
 });
 
 window.addEventListener('load', function() {
-  if (location.hash) {
+  if (options.geo) {
+    let geoStr = LZString.decompressFromEncodedURIComponent(options.geo);
+    let geo = JSON.parse(geoStr);
     
-    var params = {}
-    location.hash.substring(1).split("&").forEach(s => {
-      let def = s.split("=");
-      params[def[0]] = def[1];
-    });
-        
-    if (params.geo) {
-      let geoStr = LZString.decompressFromEncodedURIComponent(params.geo);
-      let geo = JSON.parse(geoStr);
-      
-      geoJSON = geo;
-      showGeoJSON(geoJSON);
-    }
+    geoJSON = geo;
+    showGeoJSON(geoJSON);
   }
 });
 
