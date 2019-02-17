@@ -52,12 +52,15 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-function getSignificantCoordinates(xy, latlng, inverseProjection) {
+function roundCoords(latlng, multiplier) {
 
     lat = latlng.lat;
     lng = latlng.lng;
+    
+    multiplier = multiplier || 1;
         
-    var neighbourPoint = inverseProjection([xy.x-1,xy.y-1]);
+    var xy = map.latLngToContainerPoint(latlng);
+    var neighbourPoint = map.containerPointToLatLng([xy.x-1,xy.y-1]);
     
     var latResolution = Math.min(Math.abs(neighbourPoint.lat - lat), 1);
     var lngResolution = Math.min(Math.abs(neighbourPoint.lng - lng), 1);
@@ -68,6 +71,9 @@ function getSignificantCoordinates(xy, latlng, inverseProjection) {
     while (1 / lngSig > lngResolution) lngSig *= 10;
     //latSig = Math.max(latSig/10, 1);
     //lngSig = Math.max(lngSig/10, 1);
+    
+    latSig /= multiplier;
+    lngSig /= multiplier;
         
     // truncate
     var latRounded = Math.round(lat * latSig) / latSig,
@@ -238,7 +244,8 @@ function createMarker(geoJSON, latlng) {
     ev.cancelBubble = true;
   });
   marker.addEventListener('moveend', function(ev) {
-    let latlng =  this.getLatLng();
+    let latlng = roundCoords(this.getLatLng());
+    this.setLatLng(latlng);
     this.geoJSON.geometry.coordinates = [latlng.lng, latlng.lat];
   });
   marker.toggleEditor = function() {
@@ -249,43 +256,53 @@ function createMarker(geoJSON, latlng) {
 }
 
 map.addEventListener('mousemove', function(ev) {
-    lastCoords = getSignificantCoordinates(ev.containerPoint, ev.latlng, boundInverse);   
+    lastCoords = roundCoords(ev.latlng);   
     document.getElementById("coords").textContent = lastCoords.lat + ", " + lastCoords.lng;
 });
 
 map.addEventListener('click', function(ev) {
     if (lastCoords) {
-        var text = lastCoords.lat + ", " + lastCoords.lng;
-        
-        editPopup.show(lastCoords, null);
-        
-        var input = document.getElementById('copytextinput');
-        input.style.display = "inline";
-        input.value = text;
-        input.select();
-
-        try {
-            var successful = document.execCommand('copy');
-            if (!successful) {
-                window.prompt("Coordinates:", text);
-            }
-        } catch (err) {
-            window.prompt("Coordinates:", text);
-        }        
-        input.style.display = "none";
+        editPopup.show(lastCoords, null);   
+        //copyToClipboard(lastCoords.lat + ", " + lastCoords.lng); 
     }
 });
 
+function copyToClipboard(text, fallback) {
+  
+  var input = document.getElementById('copytextinput');
+  input.style.display = "inline";
+  input.value = text;
+  input.select();
+
+  try {
+      var successful = document.execCommand('copy');
+      if (!successful && fallback) {
+          window.prompt("Coordinates:", text);
+      }
+  } catch (err) {
+      if (fallback) {
+        window.prompt("Coordinates:", text);
+      }
+  }        
+  input.style.display = "none";
+}
+
 map.addEventListener('zoomend', function(ev) {
+  storeCurrentMapState();
+});
+map.addEventListener('moveend', function(ev) {
+  storeCurrentMapState();
+});
+
+function storeCurrentMapState() {
   if (window.localStorage) {
     let mapView = {
-      center: map.getCenter(),
+      center: roundCoords(map.getCenter()),
       zoom: map.getZoom()
     }
     localStorage.setItem('mapView', JSON.stringify(mapView));
-    console.log(JSON.stringify(mapView));
   }
-});
+}
 
 function createPoint(latlng, properties) {
   // convert various latlng formats
@@ -354,7 +371,7 @@ document.getElementById("createURL").addEventListener("click", function(ev) {
   //encoded = btoa(jsonStr);
   //alert(encoded.length + ":" + compressed.length + "\n\n" + compressed);
   let zoom = map.getZoom();
-  let center = map.getCenter();
+  let center = roundCoords(map.getCenter(), 10);
   location.href = '#c=' + center.lat + ',' + center.lng + '&z=' + zoom + '&geo=' + compressed;
 });
 
@@ -425,7 +442,7 @@ if (navigator.geolocation && (window.location.protocol == "https:" || window.loc
     jumpEl.classList.remove("disabled");
     jumpEl.addEventListener("click", function(ev){
         navigator.geolocation.getCurrentPosition(function(position) {
-            map.setView([position.coords.latitude, position.coords.longitude], 13, {animate: true});
+            map.setView([position.coords.latitude, position.coords.longitude], 17, {animate: true});
         },
         function(error){
             document.getElementById("coords").textContent = "Error acquiring GPS position!";
