@@ -170,7 +170,8 @@ function createPopup() {
   editPopup.setMarker = function(marker) {
     endEdit();
     editMarker = marker;
-    if (marker.geoJSON) {
+    if (marker && marker.geoJSON) {
+      marker.setOpacity(0);
       titleEl.value = marker.geoJSON.properties && marker.geoJSON.properties.title || "";
       descriptionEl.value = marker.geoJSON.properties && marker.geoJSON.properties.description || "";
       buttonOk.innerHTML = "Update Marker";
@@ -189,9 +190,7 @@ function createPopup() {
     editPopup.setMarker(marker);
     latlngEl.innerHTML = latlng.lat + ", " + latlng.lng;
     map.openPopup(this);
-    
-    marker.setOpacity(0);
-    
+        
     if (!draggable) {
       let grip = document.createElement("div");
       grip.className = "grip";
@@ -235,16 +234,18 @@ function createMarker(geoJSON, latlng) {
     iconSize: [25,30],
     iconAnchor: [13,29],
     html: '<svg width="25" height="30" viewBox="-1 -1 28 32"><path fill="#ffffff" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M4.5,0.5c0,0,14.1,0,17,0s4,1,4,4s0,13.9,0,17s-1,4-4,4s-3,0-5,0c-3,0-3.5,3-3.5,3l0,0c0,0-0.5-3-3.5-3s-2,0-5,0s-4-1-4-4s0-13.9,0-17S1.5,0.5,4.5,0.5z"/></svg>' +
-    '<div class="title"><span>' + title + '</span></div><div class="btn-remove">X</div>'
+    '<div class="title"><span>' + title + '</span></div>'  // <div class="btn-remove">X</div>
   });
   icon.createIcon = function(oldIcon) {
     let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
+    /*
     let removeButton = div.getElementsByClassName('btn-remove')[0];
     removeButton.addEventListener("click", function(ev) {
       removePoint(geoJSON);
       // prevent propagation of click event to map
       ev.cancelBubble = true;
     });
+    */
     return div;
   }
   let marker = new L.marker(latlng, {
