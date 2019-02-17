@@ -279,10 +279,8 @@ map.addEventListener('mousemove', function(ev) {
 });
 
 map.addEventListener('click', function(ev) {
-    if (lastCoords) {
-        editPopup.show(lastCoords, null);   
-        //copyToClipboard(lastCoords.lat + ", " + lastCoords.lng); 
-    }
+    lastCoords = roundCoords(ev.latlng);   
+    editPopup.show(lastCoords, null);   
 });
 
 function copyToClipboard(text, fallback) {
