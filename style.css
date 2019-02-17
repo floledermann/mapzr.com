@@ -168,15 +168,24 @@ small {
     color: #555;
 }
 
-#jumpcurrentlocation {
-    /* font-size: 13px; */
-    vertical-align: -6px;
-    cursor: pointer;
+header .button {
+  vertical-align: -4px;
+  cursor: pointer;
 }
 
-#jumpcurrentlocation.disabled {
+header .button svg {
+    width: 18px;
+    height: 18px;
+}
+
+#createURL svg {
+    width: 16px;
+    height: 16px;
+}
+
+header .button.disabled {
     opacity: 0.5;
-    cursor: default;
+    /*cursor: default;*/
 }
 
 /* Map Content */
