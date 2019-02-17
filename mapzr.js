@@ -49,6 +49,10 @@ map.addControl(L.control.attribution({
 }));
       
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    detectRetina: true,
+    xtileSize: 200,
+    xzoomOffset: 1,
+    maxZoom: 19,
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
