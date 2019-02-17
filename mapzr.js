@@ -115,6 +115,7 @@ function createPopup() {
   let descriptionEl = editForm.getElementsByClassName("field-description")[0];
   let buttonOk = editForm.getElementsByClassName("button-ok")[0];
   let buttonCancel = editForm.getElementsByClassName("button-cancel")[0];
+  let latlngEl = editForm.getElementsByClassName("latlng")[0];
   
   function focusTitle() {
     window.setTimeout(function() {
@@ -177,6 +178,7 @@ function createPopup() {
   editPopup.show = function(latlng, markerJSON) {
     editPopup.setLatLng(latlng);
     editPopup.setMarker(markerJSON);
+    latlngEl.innerHTML = latlng.lat + ", " + latlng.lng;
     map.openPopup(this);
     
     if (!draggable) {
@@ -189,7 +191,13 @@ function createPopup() {
       
       draggable.on('dragend', function() {
         var pos = map.layerPointToLatLng(this._newPos);
+        latlngEl.innerHTML = pos.lat + ", " + pos.lng;
         editPopup.setLatLng(pos);
+      });
+      
+      draggable.on('drag', function() {
+        var pos = map.layerPointToLatLng(this._newPos);
+        latlngEl.innerHTML = pos.lat + ", " + pos.lng;
       });
 
     }
