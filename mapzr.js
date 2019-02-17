@@ -144,9 +144,9 @@ function createPopup() {
   function submit() {
     let latlng = editPopup.getLatLng();
     if (editMarker) {
-      editMarker.properties.title = titleEl.value;
-      editMarker.properties.description = descriptionEl.value;
-      editMarker.geometry.coordinates = [latlng.lng, latlng.lat];
+      editMarker.geoJSON.properties.title = titleEl.value;
+      editMarker.geoJSON.properties.description = descriptionEl.value;
+      editMarker.geoJSON.geometry.coordinates = [latlng.lng, latlng.lat];
       showGeoJSON(geoJSON);
     }
     else {
@@ -156,20 +156,23 @@ function createPopup() {
       });
     }
     map.closePopup(editPopup);
+    endEdit();
   }
 
   function cancel() {
     map.closePopup(editPopup);
+    endEdit();
   }
 
   buttonOk.addEventListener('click', submit);
   buttonCancel.addEventListener('click', cancel);
   
-  editPopup.setMarker = function(markerJSON) {
-    editMarker = markerJSON;
-    if (markerJSON) {
-      titleEl.value = markerJSON.properties && markerJSON.properties.title || "";
-      descriptionEl.value = markerJSON.properties && markerJSON.properties.description || "";
+  editPopup.setMarker = function(marker) {
+    endEdit();
+    editMarker = marker;
+    if (marker.geoJSON) {
+      titleEl.value = marker.geoJSON.properties && marker.geoJSON.properties.title || "";
+      descriptionEl.value = marker.geoJSON.properties && marker.geoJSON.properties.description || "";
       buttonOk.innerHTML = "Update Marker";
       buttonCancel.innerHTML = "Cancel";
     }
@@ -181,11 +184,13 @@ function createPopup() {
     }
   }
   
-  editPopup.show = function(latlng, markerJSON) {
+  editPopup.show = function(latlng, marker) {
     editPopup.setLatLng(latlng);
-    editPopup.setMarker(markerJSON);
+    editPopup.setMarker(marker);
     latlngEl.innerHTML = latlng.lat + ", " + latlng.lng;
     map.openPopup(this);
+    
+    marker.setOpacity(0);
     
     if (!draggable) {
       let grip = document.createElement("div");
@@ -196,19 +201,27 @@ function createPopup() {
       draggable.enable();
       
       draggable.on('dragend', function() {
-        var pos = map.layerPointToLatLng(this._newPos);
+        var pos = roundCoords(map.layerPointToLatLng(this._newPos));
         latlngEl.innerHTML = pos.lat + ", " + pos.lng;
         editPopup.setLatLng(pos);
       });
       
       draggable.on('drag', function() {
-        var pos = map.layerPointToLatLng(this._newPos);
+        var pos = roundCoords(map.layerPointToLatLng(this._newPos));
         latlngEl.innerHTML = pos.lat + ", " + pos.lng;
       });
 
     }
     focusTitle();
   }
+  
+  function endEdit() {
+    if (editMarker) {
+      editMarker.setOpacity(1);
+    }
+    editMarker = null;
+  }
+  editPopup.addEventListener('popupclose', endEdit);
 
   return editPopup;
 }
@@ -249,7 +262,7 @@ function createMarker(geoJSON, latlng) {
     this.geoJSON.geometry.coordinates = [latlng.lng, latlng.lat];
   });
   marker.toggleEditor = function() {
-    editPopup.show(this.getLatLng(), geoJSON);
+    editPopup.show(this.getLatLng(), this);
   }
   marker.geoJSON = geoJSON;
   return marker;
