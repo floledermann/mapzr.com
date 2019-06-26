@@ -236,22 +236,31 @@ header .button.disabled {
 
 #mainmap .leaflet-popup-content-wrapper .grip {
   position: absolute;
-  top: 1px;
-  right: 1px;
+  top: -1px;
+  right: -24px;
   bottom: 1px;
-  width: 23px;
-  height: auto;
+  width: 31px;
+  height: 100%;
   background-color: #ddd;
   background-image: url("img/grip.png");
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
+  border: 1px solid #b5b5b5;
+  border-left: none;
   cursor: move;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.2);
+  z-index: -1;
 }
 
 
 #mainmap .leaflet-popup-content {
   margin: 8px 8px;
-  width: 230px;
+  /* width: 230px; */
+}
+
+#mainmap .leaflet-popup-content .tabs {
+  margin: -4px 0 4px;
+  font-size: 10px;
 }
 
 #mainmap .leaflet-popup-content input.field-title{
@@ -273,6 +282,9 @@ header .button.disabled {
   font-size: 10px;
   font-family: inherit;
   border: 1px solid #ddd;
+}
+
+#mainmap .leaflet-container a.leaflet-popup-close-button {
 }
 
 /* Icons */

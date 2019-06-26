@@ -107,7 +107,7 @@ function showGeoJSON(data) {
 
 function createPopup() {
   let editForm = document.createElement("DIV");
-  editForm.innerHTML = '<input type="text" class="field-title" size="20" placeholder="Title">' +
+  editForm.innerHTML = '<div class="tabs"><!--Info Edit Share-->&nbsp;</div><input type="text" class="field-title" size="20" placeholder="Title">' +
                 '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
                 '<small class="copybutton">Lat/Lon: <span class="latlng copycontent">0, 0</span> <svg class="icon" viewBox="0 0 512 512"><use xlink:href="#icon-clipboard"></use></svg></small>' +
                 '<div><button class="button-ok">OK</button> <button class="button-cancel">Cancel</button></div>';
@@ -115,7 +115,7 @@ function createPopup() {
   let editPopup = L.popup({
     maxWidth: 230,
     maxHeight: 400,
-    closeButton: false,
+    xcloseButton: false,
     keepInView: true
   }).setContent(editForm);
   
