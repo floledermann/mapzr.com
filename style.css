@@ -34,6 +34,7 @@ header {
 }
 
 footer {
+    display: none;
     min-height: 16px;
     padding: 2px 5px 2px;
     border-top: 1px solid #bbb;
@@ -98,8 +99,9 @@ footer a {
     text-decoration: none;
 }
 
-footer #attribution {
+#attribution {
     float: right;
+    margin: 12px;
 }
 
 small {
@@ -293,8 +295,7 @@ small .icon {
     #searchform {
         display: none;
     }
-    footer div,
-    footer #attribution {
+    #attribution {
         float: none;
     }
 }
