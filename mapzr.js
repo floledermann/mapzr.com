@@ -54,7 +54,8 @@ map.addControl(L.control.attribution({
 
 var layerHiRes = L.tileLayer('https://osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png', {
   //detectRetina: true,
-  maxZoom: 19,
+  maxNativeZoom: 19,
+  maxZoom: 20,
   //zoomOffset: 1,
   attribution: 'Map Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Tiles by <a href="https://osm.rrze.fau.de/">RRZE</a>'
 }).addTo(map);
@@ -63,7 +64,8 @@ var layerControl = L.control.layers()
   .addBaseLayer(layerHiRes, "OSM Hi-Res")
   .addBaseLayer(L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     //detectRetina: true,
-    maxZoom: 19,
+    maxNativeZoom: 19,
+    maxZoom: 20,
     attribution: 'Map Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }), "OSM Default")
 ;
