@@ -237,9 +237,9 @@ header .button.disabled {
 #mainmap .leaflet-popup-content-wrapper .grip {
   position: absolute;
   top: -1px;
-  right: -24px;
+  right: -35px;
   bottom: 1px;
-  width: 31px;
+  width: 45px;
   height: 100%;
   background-color: #ddd;
   background-image: url("img/grip.png");
