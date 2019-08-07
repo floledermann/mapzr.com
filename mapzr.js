@@ -122,7 +122,7 @@ function createPopup() {
   let editForm = document.createElement("DIV");
   editForm.innerHTML = '<div class="tabs"><!--Info Edit Share-->&nbsp;</div><input type="text" class="field-title" size="20" placeholder="Title">' +
                 '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
-                '<small class="copybutton">Lat/Lon: <span class="latlng copycontent">0, 0</span> <svg class="icon" viewBox="0 0 512 512"><use xlink:href="#icon-clipboard"></use></svg></small>' +
+                '<small class="coords" title="Click to copy coordinates to clipboard">Lat/Lon: <span class="latlng copycontent">0, 0</span></small>' +
                 '<div><button class="button-ok">OK</button> <button class="button-cancel">Cancel</button></div>';
     
   let editPopup = L.popup({
@@ -140,6 +140,8 @@ function createPopup() {
   let buttonCancel = editForm.getElementsByClassName("button-cancel")[0];
   let latlngEl = editForm.getElementsByClassName("latlng")[0];
   
+  initCopyable(editForm.getElementsByClassName("coords")[0]);
+
   function focusTitle() {
     window.setTimeout(function() {
       titleEl.select();
@@ -289,7 +291,7 @@ function createMarker(geoJSON, latlng) {
 
 map.on('mousemove', function(ev) {
     lastCoords = roundCoords(ev.latlng);   
-    document.getElementById("coords").textContent = lastCoords.lat + ", " + lastCoords.lng;
+    //document.getElementById("coords").textContent = lastCoords.lat + ", " + lastCoords.lng;
 });
 
 map.on('click', function(ev) {
@@ -310,10 +312,11 @@ map.addControl(layerControl);
 
 function copyToClipboard(text, fallback) {
   
-  var input = document.getElementById('copytextinput');
-  input.style.display = "inline";
-  input.value = text;
-  input.select();
+  var textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
 
   try {
       var successful = document.execCommand('copy');
@@ -324,8 +327,23 @@ function copyToClipboard(text, fallback) {
       if (fallback) {
         window.prompt("Coordinates:", text);
       }
-  }        
-  input.style.display = "none";
+  }   
+  
+  document.body.removeChild(textArea);
+}
+
+function initCopyable(element) {
+  try {
+    if (document.queryCommandSupported('copy')) {
+      element.classList.add("copyable");
+      element.addEventListener('click', function(event) {
+        var coords = this.getElementsByClassName("copycontent")[0].textContent;
+        copyToClipboard(coords);
+      });
+    }
+  }
+  catch (e) {}
+  
 }
 
 map.addEventListener('zoomend', function(ev) {
