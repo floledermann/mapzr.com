@@ -37,7 +37,7 @@ if (location.hash) {
 var map = L.map('mainmap', {
     attributionControl: false,
     zoomSnap: 0.2,
-    zoomDelta: 0.2,
+    zoomDelta: 1,
     wheelPxPerZoomLevel: 200, // zoom levels per "click": 40 = 1, 80 = 0.5 etc.  
     wheelDebounceTime: 200
 });
