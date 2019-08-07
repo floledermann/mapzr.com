@@ -354,17 +354,14 @@ small .icon {
 
 /* Responsive */
 
-@media (max-width: 400px) {
+@media (max-width: 434px) {
     header .slogan {
         display: none;
     }
 }
 
-@media (max-width: 289px) {
+@media (max-width: 390px) {
     #searchform {
         display: none;
-    }
-    #attribution {
-        float: none;
     }
 }
