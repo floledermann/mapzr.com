@@ -108,6 +108,48 @@ small {
     font-size: 10px;
 }
 
+/* Elements */
+
+button, .button {
+  display: inline-block;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  color: #fff;
+  background-color: #007bff;
+  border: 1px solid transparent;
+  border-color: #007bff;
+  padding: .25rem .5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  cursor: pointer;
+}
+
+button.cancel,
+.button.cancel {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+button:hover,
+.button:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+button.cancel:hover,
+.button.cancel:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+
+
 /* Widgets */
 
 #mainmap {
@@ -170,9 +212,12 @@ small {
     color: #555;
 }
 
-header .button {
+header .button,
+header .button:hover {
   vertical-align: -4px;
-  cursor: pointer;
+  background-color: transparent;
+  border-color: transparent;
+  padding: 0;
 }
 
 header .button svg {

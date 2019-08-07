@@ -125,7 +125,7 @@ function createPopup() {
   editForm.innerHTML = '<div class="tabs"><!--Info Edit Share-->&nbsp;</div><input type="text" class="field-title" size="20" placeholder="Title">' +
                 '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
                 '<small class="coords" title="Click to copy coordinates to clipboard">Lat/Lon: <span class="latlng copycontent">0, 0</span></small>' +
-                '<div><button class="button-ok">OK</button> <button class="button-cancel">Cancel</button></div>';
+                '<div><button class="ok">OK</button> <button class="cancel">Cancel</button></div>';
     
   let editPopup = L.popup({
     maxWidth: 230,
@@ -138,8 +138,8 @@ function createPopup() {
 
   let titleEl = editForm.getElementsByClassName("field-title")[0];
   let descriptionEl = editForm.getElementsByClassName("field-description")[0];
-  let buttonOk = editForm.getElementsByClassName("button-ok")[0];
-  let buttonCancel = editForm.getElementsByClassName("button-cancel")[0];
+  let buttonOk = editForm.getElementsByClassName("ok")[0];
+  let buttonCancel = editForm.getElementsByClassName("cancel")[0];
   let latlngEl = editForm.getElementsByClassName("latlng")[0];
   
   initCopyable(editForm.getElementsByClassName("coords")[0]);
