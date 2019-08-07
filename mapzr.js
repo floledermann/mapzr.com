@@ -23,7 +23,7 @@ if (location.hash) {
     if (hashParams.c) {
       let center = hashParams.c.split(',').map(parseFloat);
       if (center.length == 2) {
-        let zoom = parseInt(hashParams.z || options.zoom);
+        let zoom = parseFloat(hashParams.z || options.zoom);
         options.zoom = zoom;
         options.center = center;
       }
@@ -35,7 +35,11 @@ if (location.hash) {
 }
 
 var map = L.map('mainmap', {
-    attributionControl: false
+    attributionControl: false,
+    zoomSnap: 0.2,
+    zoomDelta: 0.2,
+    wheelPxPerZoomLevel: 200, // zoom levels per "click": 40 = 1, 80 = 0.5 etc.  
+    wheelDebounceTime: 200
 });
 
 map.setView(options.center, options.zoom);
@@ -47,14 +51,22 @@ map.addControl(L.control.attribution({
     position: 'bottomright',
     prefix: ''
 }));
-      
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    detectRetina: true,
-    xtileSize: 200,
-    xzoomOffset: 1,
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+
+var layerHiRes = L.tileLayer('https://osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png', {
+  //detectRetina: true,
+  maxZoom: 19,
+  //zoomOffset: 1,
+  attribution: 'Map Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Tiles by <a href="https://osm.rrze.fau.de/">RRZE</a>'
 }).addTo(map);
+
+var layerControl = L.control.layers()
+  .addBaseLayer(layerHiRes, "OSM Hi-Res")
+  .addBaseLayer(L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    //detectRetina: true,
+    maxZoom: 19,
+    attribution: 'Map Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }), "OSM Default")
+  .addTo(map);
 
 function roundCoords(latlng, multiplier) {
 
@@ -386,7 +398,7 @@ document.getElementById("createURL").addEventListener("click", function(ev) {
   compressed = LZString.compressToEncodedURIComponent(jsonStr);
   //encoded = btoa(jsonStr);
   //alert(encoded.length + ":" + compressed.length + "\n\n" + compressed);
-  let zoom = map.getZoom();
+  let zoom = map.getZoom().toFixed(1);
   let center = roundCoords(map.getCenter(), 10);
   location.href = '#c=' + center.lat + ',' + center.lng + '&z=' + zoom + '&geo=' + compressed;
 });
