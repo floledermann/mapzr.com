@@ -66,7 +66,8 @@ var layerControl = L.control.layers()
     maxZoom: 19,
     attribution: 'Map Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }), "OSM Default")
-  .addTo(map);
+;
+// this control is added further down to ensure correct event handling order for clicks
 
 function roundCoords(latlng, multiplier) {
 
@@ -127,7 +128,7 @@ function createPopup() {
   let editPopup = L.popup({
     maxWidth: 230,
     maxHeight: 400,
-    xcloseButton: false,
+    //closeButton: false,
     keepInView: true
   }).setContent(editForm);
   
@@ -237,6 +238,7 @@ function createPopup() {
     editMarker = null;
   }
   editPopup.addEventListener('popupclose', endEdit);
+  editPopup.addEventListener('remove', endEdit);
 
   return editPopup;
 }
@@ -285,15 +287,26 @@ function createMarker(geoJSON, latlng) {
   return marker;
 }
 
-map.addEventListener('mousemove', function(ev) {
+map.on('mousemove', function(ev) {
     lastCoords = roundCoords(ev.latlng);   
     document.getElementById("coords").textContent = lastCoords.lat + ", " + lastCoords.lng;
 });
 
-map.addEventListener('click', function(ev) {
-    lastCoords = roundCoords(ev.latlng);   
-    editPopup.show(lastCoords, null);   
+map.on('click', function(ev) {
+
+  // check if layers control is expanded, if so collapse
+  var ctrl = document.querySelector('.leaflet-control-layers-expanded');
+  if (ctrl) {
+    layerControl.collapse();
+    return;
+  }
+  
+  lastCoords = roundCoords(ev.latlng);   
+  editPopup.show(lastCoords, null);   
 });
+
+// add control after click listener above, to ensure correct order of listeres
+map.addControl(layerControl);
 
 function copyToClipboard(text, fallback) {
   
