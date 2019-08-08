@@ -442,6 +442,11 @@ function loadNominatimJSON(queryString, numResults, callback) {
 }
 
 function showModal(id) {
+  
+    // make sure only one modal is visible at any time
+    document.querySelectorAll("#modals > section").forEach(function(el) {
+      el.style.display = "none";
+    });
 
     var wrapper = document.getElementById("modals");
     var el = document.getElementById(id);
@@ -465,8 +470,10 @@ document.getElementById("createURL").addEventListener("click", function(ev) {
   location.href = '#c=' + center.lat + ',' + center.lng + '&z=' + zoom + '&geo=' + compressed;
 });
 
-document.querySelector("#showSiteInfo").addEventListener("click", function(ev) {
-  showModal("siteInfo");
+document.querySelectorAll(".show-siteInfo").forEach(function(el) {
+  el.addEventListener("click", function(ev) {
+    showModal("siteInfo");
+  });
 });
 
 window.addEventListener('load', function() {
