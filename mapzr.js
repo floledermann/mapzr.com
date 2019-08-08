@@ -217,7 +217,7 @@ function createPopup() {
       grip.className = "grip";
       editPopup._wrapper.appendChild(grip);
       
-      var draggable = new L.Draggable(editPopup._container, grip);
+      draggable = new L.Draggable(editPopup._container, grip);
       draggable.enable();
       
       draggable.on('dragend', function() {
