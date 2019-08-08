@@ -102,7 +102,7 @@ footer a {
 
 #attribution {
     float: right;
-    margin: 12px;
+    margin: 12px 12px 0;
 }
 
 small {
@@ -160,23 +160,32 @@ button.cancel:hover,
     cursor: crosshair;
 }
 
-#overlays {
+#modals {
     display: none;
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
+    bottom: 0;
     z-index: 2;
-    padding: 1.5em 0 0.5em;
-    max-width: calc(100% - 2em - 55px);
+    overflow: visible;
+}
+
+#modals section {
+    position: absolute;
+    display: none;
+    padding: 1em;
     font-size: 14px;
     background-color: rgba(255,255,255,0.95);
 }
 
-#overlays h3 {
-    padding: 1em;
+#modals h3 {
+    margin: 0.5em 0 1em;
 }
 
 #searchresults {
+    right: 0;
+    max-width: calc(100% - 2em - 55px);
 }
 
 #searchresults-list {
@@ -184,7 +193,7 @@ button.cancel:hover,
 }
 
 #searchresults-list li {
-    padding: 0.7em 1em;
+    padding: 0.7em 0;
     cursor: pointer;
 }
 
@@ -194,6 +203,18 @@ button.cancel:hover,
 
 #search-term {
     font-style: italic;
+}
+
+#siteInfo {
+  top: 2em;
+  left: 10%;
+  right: 10%;
+  bottom: 2em;
+  margin: 0 auto;
+  max-width: 50em;
+  border-radius: 1em;
+  border: 1px solid rgba(0,0,0,0.2);
+  overflow-y: auto;
 }
 
 .closebutton {
@@ -213,22 +234,31 @@ button.cancel:hover,
     color: #555;
 }
 
-header .button,
-header .button:hover {
+header .button {
   vertical-align: -4px;
   background-color: transparent;
   border-color: transparent;
   padding: 0;
+  margin: 0 2px;
+}
+
+header .button:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+#attribution .button {
+  margin: 0;
 }
 
 header .button svg {
-    width: 18px;
-    height: 18px;
+    xwidth: 20px;
+    xheight: 22px;
 }
 
 #createURL svg {
-    width: 16px;
-    height: 16px;
+    xwidth: 16px;
+    xheight: 16px;
 }
 
 header .button.disabled {
@@ -287,13 +317,13 @@ header .button.disabled {
   bottom: 1px;
   width: 45px;
   height: 100%;
-  background-color: #ddd;
+  background-color: #e8e8e8;
   background-image: url("img/move.png"), url("img/grip.png");
   background-repeat: no-repeat, repeat;
   background-position: 22px 50%, 0 0;
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
-  border: 1px solid #b5b5b5;
+  border: 1px solid #c7c7c7;
   border-left: none;
   cursor: move;
   box-shadow: 0 3px 14px rgba(0,0,0,0.2);

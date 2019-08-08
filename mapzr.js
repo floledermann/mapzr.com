@@ -441,10 +441,10 @@ function loadNominatimJSON(queryString, numResults, callback) {
     xhr.send(null);       
 }
 
-function showOverlay(id) {
+function showModal(id) {
 
-    var wrapper = document.getElementById("overlays");
-    var el = document.getElementById("searchresults");
+    var wrapper = document.getElementById("modals");
+    var el = document.getElementById(id);
     
     wrapper.style.display = "block";
     el.style.display = "block";
@@ -463,6 +463,10 @@ document.getElementById("createURL").addEventListener("click", function(ev) {
   let zoom = map.getZoom().toFixed(1);
   let center = roundCoords(map.getCenter(), 10);
   location.href = '#c=' + center.lat + ',' + center.lng + '&z=' + zoom + '&geo=' + compressed;
+});
+
+document.querySelector("#showSiteInfo").addEventListener("click", function(ev) {
+  showModal("siteInfo");
 });
 
 window.addEventListener('load', function() {
@@ -509,23 +513,26 @@ document.getElementById("searchform").addEventListener("submit", function(ev) {
             results.appendChild(el);
         });
         
-        showOverlay("searchresults");
+        showModal("searchresults");
      });
 
 });
 
 function makeClosebutton(el, closeableClass) {
-    closeableClass = closeableClass || "closeable";
-    el.addEventListener("click", function(ev) {
-        var el = this;
-        while (el && !el.classList.contains(closeableClass)) {
-            el = el.parentElement;
-        }
-        if (el) el.style.display = "none";
-    });
+  closeableClass = closeableClass || "closeable";
+  el.addEventListener("click", function(ev) {
+    var el = this;
+    // walk all the way up, close all closeables (needed for modals)
+    while (el) {
+      if (el.classList.contains(closeableClass)) {
+        el.style.display = "none";
+      }
+      el = el.parentElement;
+    }
+  });
 }
 
-document.querySelectorAll(".closebutton").forEach(makeClosebutton);
+document.querySelectorAll(".closebutton").forEach(function(el){makeClosebutton(el)});
 
 var jumpEl = document.getElementById("jumpcurrentlocation");
 if (navigator.geolocation && (window.location.protocol == "https:" || window.location.protocol == "file:")) {

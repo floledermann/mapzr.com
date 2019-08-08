@@ -49,11 +49,11 @@
 </form>
 
 <span id="jumpcurrentlocation" class="button disabled" title="Center map at current location">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
 </span>
 
 <span id="createURL" class="button" title="Link to current map view &amp; content">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="16" height="16">
   <path d="M5.88.03c-.18.01-.36.03-.53.09-.27.1-.53.25-.75.47a.5.5 0 1 0 .69.69c.11-.11.24-.17.38-.22.35-.12.78-.07 1.06.22.39.39.39 1.04 0 1.44l-1.5 1.5c-.44.44-.8.48-1.06.47-.26-.01-.41-.13-.41-.13a.5.5 0 1 0-.5.88s.34.22.84.25c.5.03 1.2-.16 1.81-.78l1.5-1.5c.78-.78.78-2.04 0-2.81-.28-.28-.61-.45-.97-.53-.18-.04-.38-.04-.56-.03zm-2 2.31c-.5-.02-1.19.15-1.78.75l-1.5 1.5c-.78.78-.78 2.04 0 2.81.56.56 1.36.72 2.06.47.27-.1.53-.25.75-.47a.5.5 0 1 0-.69-.69c-.11.11-.24.17-.38.22-.35.12-.78.07-1.06-.22-.39-.39-.39-1.04 0-1.44l1.5-1.5c.4-.4.75-.45 1.03-.44.28.01.47.09.47.09a.5.5 0 1 0 .44-.88s-.34-.2-.84-.22z"
   />
 </svg></span>
@@ -70,10 +70,16 @@ Download
 Add Data
 -->
 
-<div id="attribution"><a href="https://twitter.com/floledermann"><svg id="i-twitter" viewBox="0 0 64 64" width="16" height="16" style="vertical-align: -3px">
+
+<div id="attribution">
+<!--
+<span id="showSiteInfo" class="button" title="About this site">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17"><path stroke="none" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+</svg></span>-->
+<a href="https://twitter.com/floledermann" title="Twitter"><svg id="i-twitter" viewBox="0 0 64 64" width="16" height="16" style="vertical-align: -3px">
     <path stroke-width="0" fill="#444" d="M60 16 L54 17 L58 12 L51 14 C42 4 28 15 32 24 C16 24 8 12 8 12 C8 12 2 21 12 28 L6 26 C6 32 10 36 17 38 L10 38 C14 46 21 46 21 46 C21 46 15 51 4 51 C37 67 57 37 54 21 Z" />
 </svg></a> 
-<a href="https://github.com/floledermann/mapzr.com"><svg id="i-github" viewBox="0 0 64 64" width="14" height="14" style="vertical-align: -2px">
+<a href="https://github.com/floledermann/mapzr.com" title="GitHub repository"><svg id="i-github" viewBox="0 0 64 64" width="14" height="14" style="vertical-align: -2px">
     <path stroke-width="0" fill="#444" d="M32 0 C14 0 0 14 0 32 0 53 19 62 22 62 24 62 24 61 24 60 L24 55 C17 57 14 53 13 50 13 50 13 49 11 47 10 46 6 44 10 44 13 44 15 48 15 48 18 52 22 51 24 50 24 48 26 46 26 46 18 45 12 42 12 31 12 27 13 24 15 22 15 22 13 18 15 13 15 13 20 13 24 17 27 15 37 15 40 17 44 13 49 13 49 13 51 20 49 22 49 22 51 24 52 27 52 31 52 42 45 45 38 46 39 47 40 49 40 52 L40 60 C40 61 40 62 42 62 45 62 64 53 64 32 64 14 50 0 32 0 Z" />
 </svg></a>
 
@@ -86,13 +92,19 @@ Add Data
 <div id="mainmap">
 </div>
 
-<div id="overlays" class="closeable">
-<div class="closebutton"></div>
+<div id="modals" class="closeable">
 
-<section id="searchresults">
+<section id="searchresults" class="closeable">
+<div class="closebutton"></div>
 <h3>Search results for <span id="search-term"></span>:</h3>
 <ul id="searchresults-list">
 </ul>
+</section>
+
+<section id="siteInfo" class="closeable">
+<div class="closebutton"></div>
+<h3>About mapzr.com</h3>
+<p>mapzr.com lets you share geographic items on a map without storing them on a server. 
 </section>
 
 </div><!-- #overlays -->
@@ -105,6 +117,7 @@ Add Data
 <script src="mapzr.js"></script>
 
 <section id="templates" style="display: none;">
+
 </section>
 
 </body>
