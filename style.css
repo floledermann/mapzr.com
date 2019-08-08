@@ -262,7 +262,7 @@ header .button svg {
 }
 
 header .button.disabled {
-    opacity: 0.5;
+    opacity: 0.2;
     /*cursor: default;*/
 }
 
@@ -389,19 +389,19 @@ small .icon {
 
 /* Responsive */
 
-@media (max-width: 434px) {
+@media (max-width: 460px) {
     header .slogan {
         display: none;
     }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 415px) {
     header #searchinput {
         width: 5em;
     }
 }
 
-@media (max-width: 325px) {
+@media (max-width: 350px) {
     #searchform {
         display: none;
     }

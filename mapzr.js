@@ -118,6 +118,12 @@ function showGeoJSON(data) {
   L.geoJSON(data, {
     pointToLayer: createMarker
   }).addTo(markerGroup);
+  if (data.features.length > 0) {
+    document.querySelector("#download").classList.remove("disabled");
+  }
+  else {
+    document.querySelector("#download").classList.add("disabled");
+  }
 }
 
 function createPopup() {
@@ -474,6 +480,18 @@ document.querySelectorAll(".show-siteInfo").forEach(function(el) {
   el.addEventListener("click", function(ev) {
     showModal("siteInfo");
   });
+});
+
+document.querySelector("#download").addEventListener("click", function(ev) {
+  if (geoJSON && geoJSON.features.length > 0) {
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON, null, 2));
+    var link = document.createElement('a');
+    link.setAttribute("href", dataStr);
+    link.setAttribute("download", "mapzr-export.json");
+    document.body.appendChild(link); 
+    link.click();
+    link.remove();
+  }
 });
 
 window.addEventListener('load', function() {
