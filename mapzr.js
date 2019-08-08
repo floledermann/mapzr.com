@@ -124,7 +124,7 @@ function createPopup() {
   let editForm = document.createElement("DIV");
   editForm.innerHTML = '<div class="tabs"><!--Info Edit Share-->&nbsp;</div><input type="text" class="field-title" size="20" placeholder="Title">' +
                 '<textarea class="field-description" autocomplete="off" placeholder="Description" style="resize: none;"></textarea>' +
-                '<small class="coords" title="Click to copy coordinates to clipboard">Lat/Lon: <span class="latlng copycontent">0, 0</span></small>' +
+                '<small class="coords">Lat/Lon: <span class="latlng copycontent">0, 0</span></small>' +
                 '<div><button class="ok">OK</button> <button class="cancel">Cancel</button></div>';
     
   let editPopup = L.popup({
@@ -319,32 +319,61 @@ function copyToClipboard(text, fallback) {
   document.body.appendChild(textArea);
   textArea.focus();
   textArea.select();
+  
+  var successful = false;
 
   try {
-      var successful = document.execCommand('copy');
+      successful = document.execCommand('copy');
       if (!successful && fallback) {
           window.prompt("Coordinates:", text);
+          successful = true;
       }
   } catch (err) {
       if (fallback) {
         window.prompt("Coordinates:", text);
+        successful = true;
       }
   }   
   
   document.body.removeChild(textArea);
+  
+  return successful;
 }
 
-function initCopyable(element) {
-  try {
-    if (document.queryCommandSupported('copy')) {
-      element.classList.add("copyable");
-      element.addEventListener('click', function(event) {
-        var coords = this.getElementsByClassName("copycontent")[0].textContent;
-        copyToClipboard(coords);
-      });
-    }
+function initCopyable(element, options) {
+  
+  if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+    
+    options = Object.assign({
+      copyableTitle: "Click to copy to clipboard",
+      copiedTitle: "Copied to clipboard",
+      errorTitle: "Error copying to clipboard"
+    }, options);
+    
+    element.classList.add("copyable");
+    element.title = options.copyableTitle;
+    
+    var content = element.querySelector(".copycontent") || element;
+    
+    element.addEventListener('click', function(event) {
+      var successful = copyToClipboard(content.textContent);
+      if (successful) {
+        element.classList.add("copied");
+        element.title = options.copiedTitle;
+      }
+      else {
+        element.title = options.errorTitle;
+      }
+    });
+    
+            
+    var observer = new MutationObserver(function() {
+      element.classList.remove("copied");
+      element.title = options.copyableTitle;
+    });
+    observer.observe(content, {characterData: true, childList: true})
+
   }
-  catch (e) {}
   
 }
 
