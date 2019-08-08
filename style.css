@@ -76,6 +76,7 @@ header .slogan {
 }
 
 header #searchinput {
+    width: 8em;
     font-size: 18px;
     margin: 6px 11px;
     padding: 2px 6px;
@@ -365,7 +366,14 @@ small .icon {
 }
 
 @media (max-width: 390px) {
+    header #searchinput {
+        width: 5em;
+    }
+}
+
+@media (max-width: 325px) {
     #searchform {
         display: none;
     }
 }
+
